@@ -16,9 +16,6 @@ vim.keymap.set({ 'n', 'v' }, '<leader>cd', ':cd %:h<CR>', { noremap = true, desc
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
--- Close the buffer
-vim.keymap.set('n', '<leader>bx', ':BufferClose<CR>', { desc = 'Close Buffer' })
-
 -- Enter explorer
 vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Explorer' })
 
@@ -26,8 +23,14 @@ vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Explorer' })
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
--- Append line below you to the end of current line with a space, and don't move cursor
-vim.keymap.set("n", "J", "mzJ`z", { desc = 'Append line below to current line' })
+-- Duplicate the line your curson is on
+vim.keymap.set('n', '<C-K>', 'yy:put<CR>k$', { noremap = true })
+vim.keymap.set('v', '<C-K>', 'y:put<CR>k$', { noremap = true })
+vim.keymap.set('n', '<C-J>', 'yy:put!<CR>j$', { noremap = true })
+vim.keymap.set('v', '<C-J>', 'y:put!<CR>j$', { noremap = true })
+
+-- Add lines without going into insert mode
+
 
 -- Scroll with cursor in middle of screen
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = 'Scroll down' })
@@ -36,24 +39,21 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = 'Scroll up' })
 -- Navigate search terms, but keep cursor in middle of screen
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
-
+vim.keymap.set("n", "<leader>rh", ":nohlsearch<CR>", {desc = "remove highlight from search"})
 -- Use "<leader>y" if you want the yank to go to the system register, otherwise yank only applies to nvim
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]], { desc = 'Yank to system clipboard' })
 vim.keymap.set("n", "<leader>Y", [["+Y]], { desc = 'Yank to end of line into system clipboard' })
 
 -- Use "<leader>dd" to delete without saving to a register
-vim.keymap.set({ "n", "v" }, "<leader>d", [["_d]])
+vim.keymap.set({ "n", "v" }, "<leader>dd", [["_d]], {desc = 'Delete without saving to a register'})
 
 -- When highlighting a word and pasting over it, don't lose current register value
 vim.keymap.set("x", "<leader>pp", [["_dP]], { desc = 'Paste without losing register' })
 
--- Navigate quick fix commands
-vim.keymap.set("n", "<leader>k", "<cmd>lnext<CR>zz")
-vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
-
 -- Set terminal keymaps
 vim.keymap.set('t', '<esc>', [[<C-\><C-n>]])
 vim.keymap.set('t', 'jk', [[<C-\><C-n>]])
+vim.keymap.set('t', 'jj', [[<C-\><C-n>]])
 
 -- Telescope keymaps
 -- See `:help telescope.builtin`
@@ -83,7 +83,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = "Open diagn
 -- See `:help vim.o`
 
 -- Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 -- To demonstrate, try typing /vim.* = and see what happens
 vim.opt.incsearch = true
 -- Make line numbers default
@@ -91,7 +91,6 @@ vim.wo.number = true
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
-
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`

@@ -72,7 +72,6 @@ return {
 				},
 			})
 		end,
-
 		keys = {
 			{ "<leader>ul", "<Cmd>UrlView<CR>", desc = "View buffer URLs" },
 		},

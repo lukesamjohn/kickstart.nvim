@@ -112,14 +112,7 @@ require('lazy').setup({
 
   -- Snippets
   'rafamadriz/friendly-snippets',
-  {
     "L3MON4D3/LuaSnip",
-    -- follow latest release.
-    version = "<CurrentMajor>.*",
-    -- install jsregexp (optional!).
-    build = "make install_jsregexp"
-  },
-
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -214,9 +207,9 @@ require('lazy').setup({
     'nvim-telescope/telescope-fzf-native.nvim',
     -- NOTE: If you are having trouble with this installation,
     --       refer to the README for telescope-fzf-native for more instructions.
-    build = 'make',
+    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
     cond = function()
-      return vim.fn.executable 'make' == 1
+      return vim.fn.executable 'cmake' == 1
     end,
   },
 

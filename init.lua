@@ -59,7 +59,6 @@ if not vim.loop.os_uname() == "linux" then
   end
 end
 
-
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -111,8 +110,9 @@ require('lazy').setup({
   },
 
   -- Snippets
+  'onsails/lspkind.nvim',
   'rafamadriz/friendly-snippets',
-    "L3MON4D3/LuaSnip",
+  "L3MON4D3/LuaSnip",
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -136,38 +136,7 @@ require('lazy').setup({
     },
   },
 
-  { -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-  },
-  {
-    'Mofiqul/vscode.nvim',
-    priority = 1000,
-    lazy = false,
-    name = 'vscode',
-    config = function()
-      local c = require('vscode.colors').get_colors()
-      require('vscode').setup({
-        -- Enable transparent background
-        transparent = true,
-        -- Enable italic comment
-        italic_comments = true,
-        -- Disable nvim-tree background color
-        disable_nvimtree_bg = true,
-        -- Override colors (see ./lua/vscode/colors.lua)
-        color_overrides = {
-          vscLineNumber = '#FFFFFF',
-        },
-        -- Override highlight groups (see ./lua/vscode/theme.lua)
-        group_overrides = {
-          -- this supports the same val table as vim.api.nvim_set_hl
-          -- use colors from this colorscheme by requiring vscode.colors!
-          Cursor = { fg = c.vscDarkBlue, bg = c.vscLightGreen, bold = true },
-        }
-      })
-
-      vim.cmd([[colorscheme vscode]])
-    end,
-  },
+  'Mofiqul/vscode.nvim',
 
   {
     -- Set lualine as statusline
@@ -177,8 +146,6 @@ require('lazy').setup({
       options = {
         icons_enabled = false,
         theme = 'vscode',
-        component_separators = '|',
-        section_separators = '',
       },
     },
   },
@@ -207,7 +174,8 @@ require('lazy').setup({
     'nvim-telescope/telescope-fzf-native.nvim',
     -- NOTE: If you are having trouble with this installation,
     --       refer to the README for telescope-fzf-native for more instructions.
-    build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+    build =
+    'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
     cond = function()
       return vim.fn.executable 'cmake' == 1
     end,
@@ -261,8 +229,8 @@ require('telescope').setup {
   defaults = {
     mappings = {
       i = {
-            ['<C-u>'] = false,
-            ['<C-d>'] = false,
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
       },
     },
   },
@@ -364,11 +332,38 @@ mason_lspconfig.setup_handlers {
     }
   end,
 }
-
+local cmp_kinds = {
+  Text = '  ',
+  Method = '  ',
+  Function = '  ',
+  Constructor = '  ',
+  Field = '  ',
+  Variable = '  ',
+  Class = '  ',
+  Interface = '  ',
+  Module = '  ',
+  Property = '  ',
+  Unit = '  ',
+  Value = '  ',
+  Enum = '  ',
+  Keyword = '  ',
+  Snippet = '  ',
+  Color = '  ',
+  File = '  ',
+  Reference = '  ',
+  Folder = '  ',
+  EnumMember = '  ',
+  Constant = '  ',
+  Struct = '  ',
+  Event = '  ',
+  Operator = '  ',
+  TypeParameter = '  ',
+}
 -- nvim-cmp setup
 -- Add VS Code-like snippets
 require("luasnip.loaders.from_vscode").lazy_load()
 local cmp = require 'cmp'
+local lspkind = require('lspkind')
 local luasnip = require 'luasnip'
 local select_opts = { behavior = cmp.SelectBehavior.Select }
 
@@ -381,30 +376,30 @@ cmp.setup {
     end,
   },
   mapping = {
-        ['<Up>'] = cmp.mapping.select_prev_item(select_opts),
-        ['<Down>'] = cmp.mapping.select_next_item(select_opts),
-        ['<C-p>'] = cmp.mapping.select_prev_item(select_opts),
-        ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
-        ['<C-u>'] = cmp.mapping.scroll_docs(-4),
-        ['<C-d>'] = cmp.mapping.scroll_docs(4),
-        ['<C-e>'] = cmp.mapping.abort(),
-        ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-        ['<CR>'] = cmp.mapping.confirm({ select = false }),
-        ['<C-f>'] = cmp.mapping(function(fallback)
+    ['<Up>'] = cmp.mapping.select_prev_item(select_opts),
+    ['<Down>'] = cmp.mapping.select_next_item(select_opts),
+    ['<C-p>'] = cmp.mapping.select_prev_item(select_opts),
+    ['<C-n>'] = cmp.mapping.select_next_item(select_opts),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+    ['<CR>'] = cmp.mapping.confirm({ select = false }),
+    ['<C-f>'] = cmp.mapping(function(fallback)
       if luasnip.jumpable(1) then
         luasnip.jump(1)
       else
         fallback()
       end
     end, { 'i', 's' }),
-        ['<C-b>'] = cmp.mapping(function(fallback)
+    ['<C-b>'] = cmp.mapping(function(fallback)
       if luasnip.jumpable(-1) then
         luasnip.jump(-1)
       else
         fallback()
       end
     end, { 'i', 's' }),
-        ['<Tab>'] = cmp.mapping(function(fallback)
+    ['<Tab>'] = cmp.mapping(function(fallback)
       local col = vim.fn.col('.') - 1
 
       if cmp.visible() then
@@ -415,7 +410,7 @@ cmp.setup {
         cmp.complete()
       end
     end, { 'i', 's' }),
-        ['<S-Tab>'] = cmp.mapping(function(fallback)
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
       if cmp.visible() then
         cmp.select_prev_item(select_opts)
       else
@@ -424,17 +419,9 @@ cmp.setup {
     end, { 'i', 's' }),
   },
   formatting = {
-    fields = { 'menu', 'abbr', 'kind' },
-    format = function(entry, item)
-      local menu_icon = {
-        nvim_lsp = 'λ',
-        luasnip = '⋗',
-        buffer = 'Ω',
-        path = '🖫',
-      }
-
-      item.menu = menu_icon[entry.source.name]
-      return item
+    format = function(_, vim_item)
+      vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. vim_item.kind
+      return vim_item
     end,
   },
   sources = {

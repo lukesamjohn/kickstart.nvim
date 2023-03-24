@@ -76,11 +76,4 @@ return {
 			{ "<leader>ul", "<Cmd>UrlView<CR>", desc = "View buffer URLs" },
 		},
 	},
-
-
-	-- Markdown preview (attempt)
-	{
-		"iamcco/markdown-preview.nvim",
-		run = function() vim.fn["mkdp#util#install"]() end,
-	}
 }
